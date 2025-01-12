@@ -256,7 +256,7 @@ def train_model(config):
                       tokenizer_src.get_vocab_size(),
                       tokenizer_tgt.get_vocab_size()).to(device) 
     # tensorboard
-    writer = SummaryWriter(config['experiment_name'])
+    writer = SummaryWriter(f"{current_directory}/{config['experiment_name']}")
 
     optimizer = torch.optim.Adam(model.parameters(), 
                                  lr=config['lr'],
