@@ -28,17 +28,21 @@ def predict_with_greedy_search(start_str:str)-> None:
         start_tokens = tokenizer.encode(start_str)
         print(start_tokens)
         input = torch.tensor(data=start_tokens, dtype=torch.int64).unsqueeze(dim=0).to(device)
-        print(input)
-        mask = causal_mask(input.size(1)).to(device)
+        # print(input)
         while input.size(1) <= config['seq_len']:
-            out = model.decode(input,None)
+            # use mask otheriwse model may generate repetitive words in prediction
+            mask = causal_mask(input.size(1)).to(device)
+            out = model.decode(input,mask)
             prob = model.project(out[:, -1])
             _, next_word = torch.max(prob, dim=1)
             input = torch.cat(
-                    [input, torch.empty(1,1).type_as(input).fill_(next_word.item()).to(device)],
+                    [
+                        input, 
+                        torch.empty(1,1).type_as(input).fill_(next_word.item()).to(device)
+                    ],
                     dim=1
-                ).to(device)
-            output += ' ' + tokenizer.decode(next_word.item())
+                )
+            output += tokenizer.decode(next_word.item())
     
     print(f'Model output: {output}')
 
@@ -72,7 +76,9 @@ def predict_with_beam_search(start_str: str,
 
         # Process each beam
         for score, seq, tokens in beams:
-            out = model.decode(seq, None)
+            # use mask otheriwse model may generate repetitive words in prediction
+            mask = causal_mask(seq.size(1)).to(device)
+            out = model.decode(seq, mask)
             prob = model.project(out[:, -1])
 
             # Get the top k predictions
