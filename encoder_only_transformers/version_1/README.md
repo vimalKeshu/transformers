@@ -1,5 +1,9 @@
 # encoder only transformers (version_1)
 
+#### Objective
+- Learn encoder only transformer by building its each component from scratch.
+- Use encoder only transformer for classification kind of problem. 
+
 #### Dataset
 - AG is a collection of more than 1 million news articles. News articles have been gathered from more than 2000 news sources by ComeToMyHead in more than 1 year of activity. ComeToMyHead is an academic news search engine which has been running since July, 2004. The dataset is provided by the academic comunity for research purposes in data mining (clustering, classification, etc), information retrieval (ranking, search, etc), xml, data compression, data streaming, and any other non-commercial activity. For more information, please refer to the link http://www.di.unipi.it/~gulli/AG_corpus_of_news_articles.html .
 
@@ -45,5 +49,12 @@
     |Computational Cost|Higher (learns extra parameters)|Lower (precomputed)|
 - Used learnable positional encoding.
 
+#### Encoder Module
+- Used 6 layers of encoder modules; each module contains 8 multi heads, 256 vector dimension and 128 sequence length for encoder only model architecture.
+
 #### Configuration
 - Used ```hydra``` for supporting various configuration templates.
+
+#### Tracking
+- Used wandb.
+  ![Tracking](wandb_tracking.png)
