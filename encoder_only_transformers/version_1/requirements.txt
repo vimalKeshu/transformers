@@ -16,4 +16,6 @@ peft
 datasets
 bitsandbytes
 torchmetrics
+hydra-core
 huggingface-hub
+wandb
