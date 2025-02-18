@@ -24,8 +24,7 @@
 - [fancyzhx/ag_news](https://huggingface.co/datasets/fancyzhx/ag_news)
 
 #### Tokenizer
-- Used ```RobertaTokenizerFast``` tokenizer from model, ```roberta-base``` from hugging face.
-- It is generally used for text classification plus handling out-of-vocabulary words. 
+- Used ```BertTokenizerFast``` tokenizer from model, ```bert-base-uncased``` from hugging face. 
 
 #### Word Embedding 
 - Choices for word embedding
@@ -47,7 +46,6 @@
     |Generalization|Poor for longer sequences|Good for any sequence length|
     |Flexibility|Task-specific adaptation|Fixed for all tasks|
     |Computational Cost|Higher (learns extra parameters)|Lower (precomputed)|
-- Used learnable positional encoding.
 
 #### Encoder Module
 - Used 6 layers of encoder modules; each module contains 8 multi heads, 256 vector dimension and 128 sequence length for encoder only model architecture.

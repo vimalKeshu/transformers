@@ -22,9 +22,10 @@ def train(model, train_loader, criterion, optimizer, device, epoch, cfg):
     progress_bar = tqdm(train_loader, desc=f"Epoch {epoch+1}")
     for batch in progress_bar:
         input_ids = batch["input_ids"].to(device)
+        masks = batch["mask"].to(device)
         labels = batch["label"].to(device)
         optimizer.zero_grad() # reset the gradients
-        outputs = model(input_ids) # predict the output, forward pass
+        outputs = model(input_ids, masks) # predict the output, forward pass
         loss = criterion(outputs, labels) # compute the loss
         loss.backward() # backpropagate the loss, calculate the gradient
         optimizer.step() # update the weights
@@ -42,8 +43,9 @@ def evaluate(model, test_loader, device):
     with torch.no_grad():
         for batch in test_loader:
             input_ids = batch["input_ids"].to(device)
+            masks = batch["mask"].to(device)
             labels = batch["label"].to(device)
-            outputs = model(input_ids)
+            outputs = model(input_ids, masks)
             predictions = torch.argmax(outputs, dim=1)
             correct += (predictions == labels).sum().item()
             total += labels.size(0)

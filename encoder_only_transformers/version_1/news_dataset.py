@@ -21,5 +21,6 @@ class NewsDataset(Dataset):
                                   return_tensors="pt")        
         return {
             "input_ids": encoding["input_ids"].squeeze(), #(seq_len)
+            "mask": encoding["attention_mask"].unsqueeze(0).int(), #(1,1,seq_len)
             "label": torch.tensor(example["label"], dtype=torch.int64), 
         }

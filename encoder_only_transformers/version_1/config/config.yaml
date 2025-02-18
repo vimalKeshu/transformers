@@ -3,12 +3,12 @@ wandb:
 
 model:
   vocab_size: 30522
-  d_model: 256
+  d_model: 1024
   num_heads: 8
   d_ff: 512
   num_layers: 6
   num_classes: 4
-  max_seq_len: 128
+  max_seq_len: 512
   dropout: 0.1
   tokenizer: "bert-base-uncased"
 
