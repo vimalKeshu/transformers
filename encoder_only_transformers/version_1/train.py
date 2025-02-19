@@ -15,6 +15,7 @@ from pathlib import Path
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
+from collections import defaultdict
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -56,57 +57,6 @@ def train(model, train_loader, criterion, optimizer, device, epoch, cfg):
     log_model_weights(model, epoch)
     return avg_loss
 
-# def evaluate(epoch, model, test_loader, tokenizer, class_names, device):
-#     torch.cuda.empty_cache()
-#     model.eval()
-#     correct, total = 0, 0
-#     samples = []
-#     all_preds, all_labels = [], []
-    
-#     with torch.no_grad():
-#         for batch in test_loader:
-#             input_ids = batch["input_ids"].to(device)
-#             masks = batch["mask"].to(device)
-#             labels = batch["label"].to(device)
-#             outputs = model(input_ids, masks)
-#             predictions = torch.argmax(outputs, dim=1)
-#             correct += (predictions == labels).sum().item()
-#             total += labels.size(0)
-
-#             all_preds.extend(predictions.cpu().numpy())
-#             all_labels.extend(labels.cpu().numpy())
-#             for i in range(min(5, len(labels))):  # Log only 5 samples per batch
-#                 decoded_text = tokenizer.decode(input_ids[i].cpu().numpy(), skip_special_tokens=True)
-#                 samples.append(wandb.Table(columns=["Text", "True Label", "Predicted Label"],
-#                                            data=[[decoded_text, class_names[labels[i].item()], class_names[predictions[i].item()]]]))
-#     accuracy = correct / total * 100
-#     wandb.log({"test_accuracy": accuracy})
-#     wandb.log({f"eval/sample_predictions": samples, "epoch": epoch})
-#     print(f"Test Accuracy: {accuracy:.2f}%")
-
-#     # Compute per-class accuracy
-#     class_acc = {class_names[i]: (correct[i] / total * 100) if total > 0 else 0 for i in range(len(class_names))}
-#     wandb.log({f"eval/per_class_accuracy": class_acc, "epoch": epoch})
-
-#     cm = confusion_matrix(all_labels, all_preds, labels=range(len(class_names)))
-#     fig, _ = plt.subplots(figsize=(8, 6))
-#     sns.heatmap(cm, annot=True, fmt="d", xticklabels=class_names, yticklabels=class_names, cmap="Blues")
-#     plt.xlabel("Predicted")
-#     plt.ylabel("Actual")
-#     plt.title("Confusion Matrix")
-
-#     wandb.log({f"eval/confusion_matrix": wandb.Image(fig), "epoch": epoch})
-#     plt.close(fig)
-
-#     return accuracy
-
-import torch
-import wandb
-import seaborn as sns
-import matplotlib.pyplot as plt
-from collections import defaultdict
-from sklearn.metrics import confusion_matrix
-
 def evaluate(epoch, model, test_loader, tokenizer, class_names, device):
     torch.cuda.empty_cache()
     model.eval()
@@ -116,7 +66,7 @@ def evaluate(epoch, model, test_loader, tokenizer, class_names, device):
     class_correct = defaultdict(int)
     class_total = defaultdict(int)
 
-    samples_table = wandb.Table(columns=["Text", "True Label", "Predicted Label"])  # ✅ Initialize table
+    samples_table = wandb.Table(columns=["Text", "True Label", "Predicted Label"])  # Initialize table
 
     with torch.no_grad():
         for batch in test_loader:
@@ -138,23 +88,23 @@ def evaluate(epoch, model, test_loader, tokenizer, class_names, device):
                 if label == pred:
                     class_correct[label] += 1
             
-            # ✅ Log only 5 samples per batch
+            # Log only 5 samples per batch
             for i in range(min(5, len(labels))):
                 decoded_text = tokenizer.decode(input_ids[i].cpu().numpy(), skip_special_tokens=True)
                 samples_table.add_data(decoded_text, class_names[labels[i].item()], class_names[predictions[i].item()])
 
-    # ✅ Compute overall accuracy
+    # Compute overall accuracy
     accuracy = correct / total * 100
     wandb.log({"test_accuracy": accuracy, "epoch": epoch})
 
-    # ✅ Compute per-class accuracy
+    # Compute per-class accuracy
     class_acc = {class_names[i]: (class_correct[i] / class_total[i] * 100) if class_total[i] > 0 else 0 for i in range(len(class_names))}
     wandb.log({"eval/per_class_accuracy": class_acc, "epoch": epoch})
 
-    # ✅ Log sample predictions
+    # Log sample predictions
     wandb.log({f"eval/sample_predictions": samples_table, "epoch": epoch})
 
-    # ✅ Compute & log confusion matrix
+    # Compute & log confusion matrix
     cm = confusion_matrix(all_labels, all_preds, labels=range(len(class_names)))
     fig, _ = plt.subplots(figsize=(8, 6))
     sns.heatmap(cm, annot=True, fmt="d", xticklabels=class_names, yticklabels=class_names, cmap="Blues")
@@ -162,7 +112,7 @@ def evaluate(epoch, model, test_loader, tokenizer, class_names, device):
     plt.ylabel("Actual")
     plt.title("Confusion Matrix")
     wandb.log({f"eval/confusion_matrix": wandb.Image(fig), "epoch": epoch})
-    plt.close(fig)  # ✅ Avoid memory leak
+    plt.close(fig)  # Avoid memory leak
 
     print(f"Test Accuracy: {accuracy:.2f}%")
     return accuracy
