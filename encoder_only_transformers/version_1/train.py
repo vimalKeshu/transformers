@@ -27,12 +27,8 @@ def log_model_weights(model, epoch):
                 f"weight_stats/{name}_mean": param.mean().item(),
                 f"weight_stats/{name}_std": param.std().item(),
             }, step=epoch)
-
-def log_model_gradients(model, epoch):
-    for name, param in model.named_parameters():
-        if param.requires_grad and param.grad is not None:
-            wandb.log({f"gradients/{name}": wandb.Histogram(param.grad.cpu().detach().numpy())}, step=epoch)
-
+        if param.grad is not None:
+            wandb.log({f"gradients/{name}": wandb.Histogram(param.grad.cpu().detach().numpy())}, step=epoch)            
 
 def train(model, train_loader, criterion, optimizer, device, epoch, cfg):
     torch.cuda.empty_cache()
@@ -47,7 +43,6 @@ def train(model, train_loader, criterion, optimizer, device, epoch, cfg):
         outputs = model(input_ids, masks) # predict the output, forward pass
         loss = criterion(outputs, labels) # compute the loss
         loss.backward() # backpropagate the loss, calculate the gradient
-        log_model_gradients(model, epoch)
         optimizer.step() # update the weights
         total_loss += loss.item() # calculate the total loss
         progress_bar.set_postfix(loss=loss.item())
