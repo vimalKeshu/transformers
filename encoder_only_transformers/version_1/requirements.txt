@@ -19,3 +19,5 @@ torchmetrics
 hydra-core
 huggingface-hub
 wandb
+seaborn
+sklearn

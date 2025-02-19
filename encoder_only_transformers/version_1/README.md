@@ -48,7 +48,7 @@
     |Computational Cost|Higher (learns extra parameters)|Lower (precomputed)|
 
 #### Encoder Module
-- Used 6 layers of encoder modules; each module contains 8 multi heads, 256 vector dimension and 128 sequence length for encoder only model architecture.
+- Used 6 layers of encoder modules; each module contains 8 multi heads, 1024 vector dimension and 512 sequence length for encoder only model architecture.
 
 #### Configuration
 - Used ```hydra``` for supporting various configuration templates.
@@ -56,3 +56,12 @@
 #### Tracking
 - Used wandb.
   ![Tracking](wandb_tracking.png)
+
+#### Config Params
+- Recommended configuration for learners 
+
+  |Model Type|seq_len|embed_dim|
+  | -------- | ------- | -------- |
+  |Small (lightweight)|	256|	128 - 256|
+  |Medium (balanced)|	384|	256 - 512|
+  |Large (high accuracy)|	512|	512 - 768|
